@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - lite-server
+      - json-server
+
+  lite-server:
+    image: node:latest
+    volumes:
+      - ./lite-server:/usr/src/app
+    working_dir: /usr/src/app
+    command: bash -c "npm install lite-server && npx lite-server"
+    # No ports exposed to the host
+
+  json-server:
+    image: node:latest
+    volumes:
+      - ./json-server:/usr/src/app
+    working_dir: /usr/src/app
+    command: bash -c "npm install json-server && npx json-server --watch db.json"
+    # No ports exposed to the host
