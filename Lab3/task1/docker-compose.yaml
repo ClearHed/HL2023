@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  router:
+    image: mongo
+    container_name: mongo_router
+    ports:
+      - 27017:27017
+    command: mongos --port 27017 --configdb "rs_config_server/config_server_1:27017" --bind_ip_all
+    volumes:
+      - ./scripts:/scripts
+      - ../data:/data
+
+
+  config_server_1:
+    image: mongo
+    container_name: mongo_config_1 
+    command: mongod --port 27017 --configsvr --replSet rs_config_server
+    volumes:
+      - ./scripts:/scripts 
+    links:
+      - shard1_1
+      - shard2_1
+      - shard3_1
+
+  config_server_2:
+    image: mongo
+    container_name: mongo_config_2
+    command: mongod --port 27017 --configsvr --replSet rs_config_server
+    volumes:
+      - ./scripts:/scripts
+    links:
+      - config_server_1
+
+  config_server_3:
+    image: mongo
+    container_name: mongo_config_3 
+    command: mongod --port 27017 --configsvr --replSet rs_config_server
+    volumes:
+      - ./scripts:/scripts
+    links:
+      - config_server_2
+
+
+  shard1_1:
+    image: mongo
+    container_name: shard_1_node_1
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_1
+    volumes:
+      - ./scripts:/scripts
+    links:
+      - shard1_2
+      - shard1_3
+
+  shard1_2:
+    image: mongo
+    container_name: shard_1_node_2
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_1
+    volumes:
+      - ./scripts:/scripts
+
+  shard1_3:
+    image: mongo
+    container_name: shard_1_node_3
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_1
+    volumes:
+      - ./scripts:/scripts
+
+  shard2_1:
+    image: mongo
+    container_name: shard_2_node_1
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_2
+    volumes:
+      - ./scripts:/scripts
+    links:
+      - shard2_2
+      - shard2_3
+
+  shard2_2:
+    image: mongo
+    container_name: shard_2_node_2
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_2
+    volumes:
+      - ./scripts:/scripts
+
+  shard2_3:
+    image: mongo
+    container_name: shard_2_node_3
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_2
+    volumes:
+      - ./scripts:/scripts
+
+  shard3_1:
+    image: mongo
+    container_name: shard_3_node_1
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_3
+    volumes:
+      - ./scripts:/scripts
+    links:
+      - shard3_2
+      - shard3_3
+
+  shard3_2:
+    image: mongo
+    container_name: shard_3_node_2
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_3
+    volumes:
+      - ./scripts:/scripts
+
+  shard3_3:
+    image: mongo
+    container_name: shard_3_node_3
+    command: mongod --port 27017 --shardsvr --replSet rs_shard_3
+    volumes:
+      - ./scripts:/scripts
