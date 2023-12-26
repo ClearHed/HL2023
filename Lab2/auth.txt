@@ -1,0 +1,3 @@
+# JMeter generated Authorization file
+http://localhost	userEditor	123			BASIC_DIGEST
+http://localhost	userEditor2				BASIC_DIGEST
